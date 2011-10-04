@@ -9,6 +9,16 @@ function Img(path)
 	return r
 end
 
+function NewClass()
+	c = {}
+	c.__index = c
+	return c
+end
+
+function NewInstance(c)
+	return setmetatable({}, c);
+end
+
 function Trim(s)
 	return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
@@ -21,13 +31,15 @@ function GetTokens(line)
 	return r
 end
 
-function CreatePart(info)
-	print(info)
-	local p = {}
+Part = NewClass()
+
+function Part:new(info)
+	local p = NewInstance(Part)
+	p.cont = {}
 	tokens = GetTokens(info)
 	local c=0
 	for i,s in ipairs(tokens) do
-		table.insert(p, tonumber(s))
+		table.insert(p.cont, tonumber(s))
 		c = c+1
 	end
 	if c<6 then
@@ -39,38 +51,29 @@ function CreatePart(info)
 	return p
 end
 
-function DrawPart(p)
-	love.graphics.line(p)
+function Part:draw()
+	love.graphics.line(self.cont)
 end
 
-function LoadLevel(path)
-	local l = {}
+Level = NewClass()
+
+function Level:new(path)
+	local l = NewInstance(Level)
+	l.parts = {}
 	
 	print("loading", path)
 	
 	for line in love.filesystem.lines(path) do
-		table.insert(l, CreatePart(line))
+		table.insert(l.parts, Part:new(line))
 	end
 	
 	return l
 end
 
-function DrawLevel(lvl)
-	for i,p in ipairs(lvl) do
-		DrawPart(p)
+function Level:draw(lvl)
+	for i,p in ipairs(self.parts) do
+		p:draw()
 	end
-end
-
-function LoadLevel(path)
-	local l = {}
-	
-	print("loading", path)
-	
-	for line in love.filesystem.lines(path) do
-		table.insert(l, CreatePart(line))
-	end
-	
-	return l
 end
 
 function love.load()
@@ -79,7 +82,7 @@ function love.load()
 	--img2 = Img( "awesome.png" )
 
 	lines = { 10,10, 20,10, 10,20 }
-	lvl = LoadLevel("levels/test.lvl");
+	lvl = Level:new("levels/test.lvl");
 end
 
 function love.draw()
@@ -89,5 +92,5 @@ function love.draw()
 	love.graphics.draw(img, 20, 20)
 	
 	love.graphics.setColor(0, 0, 0)
-	DrawLevel(lvl)
+	lvl:draw()
 end
