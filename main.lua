@@ -2,6 +2,7 @@ require 'level.lua'
 require 'editor.lua'
 require 'img.lua'
 require 'object.lua'
+require 'grab.lua'
 
 function love.load()
 	bkg = Img( "bkg.png" )
@@ -46,6 +47,8 @@ function love.mousereleased(x, y, button)
 			Object:new(lvl, x,y,10,"awesome.png")
 		elseif button == "r" then
 			lvl:bomb(x,y,true,60,10)
+		elseif button == "x1" then
+			Grab:new(lvl, x, y)
 		end
 	end
 end
