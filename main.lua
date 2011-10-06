@@ -28,6 +28,11 @@ end
 function love.mousepressed(x, y, button)
 	editor_mousepressed(lvl, x,y,button)
 end
+
 function love.mousereleased(x, y, button)
 	editor_mousereleased(lvl, x,y,button)
+end
+
+function love.keyreleased(key)
+	editor_keyreleased(lvl, key)
 end

@@ -56,3 +56,19 @@ function editor_mousereleased(lvl, x,y,button)
 	end
 	editor.x,editor.y = x,y
 end
+
+function editor_keyreleased(lvl, key)
+	if key == " " then
+		editor.points = {}
+	end
+	if key == "return" then
+		lvl:add(Part:FromPoints(editor.points))
+		editor.points = {}
+	end
+	if key == "backspace" then
+		if #editor.points >=2 then
+			editor.points[#editor.points] = nil
+			editor.points[#editor.points] = nil
+		end
+	end
+end

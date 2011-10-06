@@ -21,6 +21,12 @@ function Part:new(info)
 	return p
 end
 
+function Part:FromPoints(c)
+	local p = NewInstance(Part)
+	p.cont = c
+	return p
+end
+
 function Part:draw()
 	love.graphics.line(self.cont)
 end

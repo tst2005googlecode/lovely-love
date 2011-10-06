@@ -16,6 +16,10 @@ function Level:new(path)
 	return l
 end
 
+function Level:add(part)
+	table.insert(self.parts, part)
+end
+
 function Level:draw(lvl)
 	for i,p in ipairs(self.parts) do
 		p:draw()
