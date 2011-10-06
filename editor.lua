@@ -53,6 +53,7 @@ function editor_mousereleased(lvl, x,y,button)
 		local r = Radial:new(editor.x,editor.y, editor.RA)
 		if r:within(x,y) then
 			print("within", r:angle(x,y))
+			lvl:createPhysics()
 		end
 		editor.r = false
 	end
