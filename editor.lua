@@ -27,6 +27,7 @@ function editor_draw(lvl)
 		end
 		love.graphics.circle("fill", editor.x, editor.y, r.r, 20)
 	end
+	love.graphics.print("[EDITOR ENABLED]", 10, 10)
 end
 
 function editor_update(lvl, dt)
