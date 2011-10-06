@@ -9,6 +9,7 @@ end
 
 function editor_draw(lvl)
 	lvl:draw()
+	love.graphics.setColor(0, 0, 0)
 	if #editor.points >= 4 then
 		love.graphics.line(editor.points)
 	end
@@ -65,6 +66,7 @@ function editor_keyreleased(lvl, key)
 	if key == "return" then
 		lvl:add(Part:FromPoints(editor.points))
 		editor.points = {}
+		lvl:createPhysics()
 	end
 	if key == "backspace" then
 		if #editor.points >=2 then

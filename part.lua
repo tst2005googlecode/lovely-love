@@ -30,3 +30,10 @@ end
 function Part:draw()
 	love.graphics.line(self.cont)
 end
+
+function Part:createPhysics(wo)
+	print "creating physics"
+	local body = love.physics.newBody(wo, 0, 0)
+	love.physics.newPolygonShape(body, unpack(self.cont))
+	return body
+end

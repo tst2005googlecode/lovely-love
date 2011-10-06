@@ -1,11 +1,10 @@
 require 'level.lua'
 require 'editor.lua'
 require 'img.lua'
+require 'object.lua'
 
 function love.load()
 	bkg = Img( "bkg.png" )
-	img = Img( "awesome.png" )
-	--img2 = Img( "awesome.png" )
 
 	lines = { 10,10, 20,10, 10,20 }
 	lvl = Level:new("levels/test.lvl");
@@ -16,7 +15,6 @@ end
 function love.draw()
 	love.graphics.setColor(255, 255, 255)
 	love.graphics.draw(bkg, 0, 0)
-	love.graphics.draw(img, 20, 20)
 	
 	love.graphics.setColor(0, 0, 0)
 	if useEditor then
@@ -29,6 +27,8 @@ end
 function love.update(dt)
 	if useEditor then
 		editor_update(lvl, dt)
+	else
+		lvl:update(dt)
 	end
 end
 
@@ -41,6 +41,10 @@ end
 function love.mousereleased(x, y, button)
 	if useEditor then
 		editor_mousereleased(lvl, x,y,button)
+	else
+		if button == "l" then
+			Object:new(lvl, x,y,10,"awesome.png")
+		end
 	end
 end
 
