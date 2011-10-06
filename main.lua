@@ -44,6 +44,8 @@ function love.mousereleased(x, y, button)
 	else
 		if button == "l" then
 			Object:new(lvl, x,y,10,"awesome.png")
+		elseif button == "r" then
+			lvl:bomb(x,y,true,60,10)
 		end
 	end
 end

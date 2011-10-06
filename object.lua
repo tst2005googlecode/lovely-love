@@ -30,7 +30,11 @@ function Object:draw()
 end
 
 function Object:createPhysics(world)
-	self.body = love.physics.newBody(world, self.x,self.y, 15)
+	self.body = love.physics.newBody(world, self.x,self.y, 15, 12)
 	love.physics.newCircleShape(self.body, 0, 0, self.radius )
 	self.body:setMassFromShapes()
+end
+
+function Object:ApplyImpulse(p,x,y)
+	self.body:applyImpulse(p.x,p.y,x,y)
 end

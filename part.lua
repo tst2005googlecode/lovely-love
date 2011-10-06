@@ -28,7 +28,10 @@ function Part:FromPoints(c)
 end
 
 function Part:draw()
+	love.graphics.setColor(0, 0, 0, 255)
 	love.graphics.line(self.cont)
+	love.graphics.setColor(50, 50, 50, 255)
+	love.graphics.polygon('fill', self.cont)
 end
 
 function Part:createPhysics(wo)
