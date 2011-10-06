@@ -54,5 +54,9 @@ function Level:createPhysics()
 		print "creating object"
 		p:createPhysics(self.physics)
 	end
+	print "creating objects"
+	for i,o in ipairs(self.objects) do
+		o:createPhysics(self.physics)
+	end
 	print "done"
 end
