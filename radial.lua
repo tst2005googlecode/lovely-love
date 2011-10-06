@@ -23,5 +23,14 @@ function Radial:angle(x,y)
 	local b = math.asin(dx/d)
 	
 	a = (a * 360) / (2* math.pi)
+	if dx < 0 then
+		a = 180 -a
+	end
+	if dy <= 0 and dx >= 0 then
+		a = 360 + a
+	end
+	if a == 360 then
+		a = 0
+	end
 	return a
 end
