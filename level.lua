@@ -40,9 +40,12 @@ function Level:draw()
 end
 
 function Level:update(delta)
-	self.physics:update(delta)
+	COUNT = 10
+	for i in range(COUNT) do
+		self.physics:update(delta/COUNT)
+	end
 	for i,o in ipairs(self.objects) do
-		o:update(delta)
+		o:update(self, delta)
 	end
 end
 
@@ -62,15 +65,15 @@ function Level:createPhysics()
 	print "done"
 end
 
-function Level:bomb(x,y,doSuction,maxDistance, maxForce)
-	self:_bomb(x,y,doSuction,maxDistance,maxForce,true)
+function Level:bomb(x,y,doSuction,maxDistance, maxForce, ignore)
+	self:_bomb(x,y,doSuction,maxDistance,maxForce,true, ignore)
 end
 
-function Level:force(x,y,doSuction,maxDistance, maxForce)
-	self:_bomb(x,y,doSuction,maxDistance,maxForce,false)
+function Level:force(x,y,doSuction,maxDistance, maxForce, ignore)
+	self:_bomb(x,y,doSuction,maxDistance,maxForce,false,ignore)
 end
 
-function Level:_bomb(x,y,doSuction,maxDistance, maxForce,doImpulse)
+function Level:_bomb(x,y,doSuction,maxDistance, maxForce,doImpulse,ignore)
 	--local maxDistance = 9 -- In your head don't forget this number is low because we're multiplying it by 32 pixels
 	--local maxForce = 22
 	--doSuction = true --Very cool looking implosion effect instead of explosion
@@ -78,46 +81,49 @@ function Level:_bomb(x,y,doSuction,maxDistance, maxForce,doImpulse)
 	local PTM_RATIO = 1
 	--In Box2D the bodies are a linked list, so keep getting the next one until it doesn't exist.
 	for i,o in ipairs(self.objects) do
-		--Box2D uses meters, there's 32 pixels in one meter. PTM_RATIO is defined somewhere in the class.
-		local b2TouchPosition = vec:new(pos.x/PTM_RATIO, pos.y/PTM_RATIO)
-		local b2BodyPosition = vec:new(o.x, o.y)
-
-		--Don't forget any measurements always need to take PTM_RATIO into account
-		local distance -- Why do i want to use CGFloat vs float - I'm not sure, but this mixing seems to work fine for this little test.
-		local strength
-		local force
-		local angle
-
-		if doSuction then -- To go towards the press, all we really change is the atanf function, and swap which goes first to reverse the angle
-			-- Get the distance, and cap it
-			distance = vec:Distance(b2BodyPosition, b2TouchPosition)
-			if distance > maxDistance then
-				distance = maxDistance - 0.01
-			end
-			-- Get the strength
-			--strength = distance / maxDistance -- Uncomment and reverse these two. and ones further away will get more force instead of less
-			strength = (maxDistance - distance) / maxDistance -- This makes it so that the closer something is - the stronger, instead of further
-			force  = strength * maxForce
-
-			-- Get the angle
-			angle = math.atan2(b2TouchPosition.y - b2BodyPosition.y, b2TouchPosition.x - b2BodyPosition.x)
-			-- Apply an impulse to the body, using the angle
+		if ignore == o then
 		else
-			distance = vec:Distance(b2BodyPosition, b2TouchPosition)
-			if distance > maxDistance then
-				distance = maxDistance - 0.01
-			end
+			--Box2D uses meters, there's 32 pixels in one meter. PTM_RATIO is defined somewhere in the class.
+			local b2TouchPosition = vec:new(pos.x/PTM_RATIO, pos.y/PTM_RATIO)
+			local b2BodyPosition = vec:new(o.x, o.y)
 
-			-- Normally if distance is max distance, it'll have the most strength, this makes it so the opposite is true - closer = stronger
-			strength = (maxDistance - distance) / maxDistance -- This makes it so that the closer something is - the stronger, instead of further
-			force = strength * maxForce
-			angle = math.atan2(b2BodyPosition.y - b2TouchPosition.y, b2BodyPosition.x - b2TouchPosition.x)
-			-- Apply an impulse to the body, using the angle
-		end
-		if doImpulse then
-			o:applyImpulse(vec:new(math.cos(angle) * force, math.sin(angle) * force), o.x, o.y)
-		else
-			o:applyForce(vec:new(math.cos(angle) * force, math.sin(angle) * force), o.x, o.y)
+			--Don't forget any measurements always need to take PTM_RATIO into account
+			local distance -- Why do i want to use CGFloat vs float - I'm not sure, but this mixing seems to work fine for this little test.
+			local strength
+			local force
+			local angle
+
+			if doSuction then -- To go towards the press, all we really change is the atanf function, and swap which goes first to reverse the angle
+				-- Get the distance, and cap it
+				distance = vec:Distance(b2BodyPosition, b2TouchPosition)
+				if distance > maxDistance then
+					distance = maxDistance - 0.01
+				end
+				-- Get the strength
+				--strength = distance / maxDistance -- Uncomment and reverse these two. and ones further away will get more force instead of less
+				strength = (maxDistance - distance) / maxDistance -- This makes it so that the closer something is - the stronger, instead of further
+				force  = strength * maxForce
+
+				-- Get the angle
+				angle = math.atan2(b2TouchPosition.y - b2BodyPosition.y, b2TouchPosition.x - b2BodyPosition.x)
+				-- Apply an impulse to the body, using the angle
+			else
+				distance = vec:Distance(b2BodyPosition, b2TouchPosition)
+				if distance > maxDistance then
+					distance = maxDistance - 0.01
+				end
+
+				-- Normally if distance is max distance, it'll have the most strength, this makes it so the opposite is true - closer = stronger
+				strength = (maxDistance - distance) / maxDistance -- This makes it so that the closer something is - the stronger, instead of further
+				force = strength * maxForce
+				angle = math.atan2(b2BodyPosition.y - b2TouchPosition.y, b2BodyPosition.x - b2TouchPosition.x)
+				-- Apply an impulse to the body, using the angle
+			end
+			if doImpulse then
+				o:applyImpulse(vec:new(math.cos(angle) * force, math.sin(angle) * force), o.x, o.y)
+			else
+				o:applyForce(vec:new(math.cos(angle) * force, math.sin(angle) * force), o.x, o.y)
+			end
 		end
 	end
 end

@@ -5,15 +5,19 @@ Object = NewClass()
 
 function Object:new(world, x,y,radius,img)
 	local b = NewInstance(Object)
-	b.radius = radius
-	b.img = Img(img)
-	b.x,b.y = x,y
-	b:createPhysics(world.physics)
-	world:addObject(b)
+	b:setup(world, x,y,radius,img)
 	return b
 end
 
-function Object:update(delta)
+function Object:setup(world, x,y,radius,img)
+	self.radius = radius
+	self.img = Img(img)
+	self.x,self.y = x,y
+	self:createPhysics(world.physics)
+	world:addObject(self)
+end
+
+function Object:update(world, delta)
 	self.x,self.y = self.body:getPosition()
 end
 
