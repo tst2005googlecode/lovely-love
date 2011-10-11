@@ -4,6 +4,9 @@ require 'img.lua'
 require 'object.lua'
 require 'grab.lua'
 
+DISTANCE = 120
+FORCE = 15
+
 function love.load()
 	bkg = Img( "bkg.png" )
 
@@ -11,6 +14,8 @@ function love.load()
 	lvl = Level:new("levels/test.lvl");
 	editor_load()
 	useEditor = false
+	useForce = false
+	shiftIsDown = false
 end
 
 function love.draw()
@@ -25,17 +30,32 @@ function love.draw()
 	end
 end
 
+function handleKey(key, down)
+	--print("handle key: ", key, down)
+	if key=="lshift" then
+		shiftIsDown = down
+	elseif key == "x2" then
+		useForce = down
+	end
+end
+
 function love.update(dt)
 	if useEditor then
 		editor_update(lvl, dt)
 	else
 		lvl:update(dt)
+		if useForce then
+			local x, y = love.mouse.getPosition()
+			lvl:force(x,y,shiftIsDown==false,DISTANCE,FORCE)
+		end
 	end
 end
 
 function love.mousepressed(x, y, button)
 	if useEditor then
 		editor_mousepressed(lvl, x,y,button)
+	else
+		handleKey(button,true)
 	end
 end
 
@@ -46,9 +66,11 @@ function love.mousereleased(x, y, button)
 		if button == "l" then
 			Object:new(lvl, x,y,10,"awesome.png")
 		elseif button == "r" then
-			lvl:bomb(x,y,true,60,10)
+			lvl:bomb(x,y,shiftIsDown,DISTANCE,FORCE)
 		elseif button == "x1" then
 			Grab:new(lvl, x, y)
+		else
+			handleKey(button,false)
 		end
 	end
 end
@@ -58,5 +80,13 @@ function love.keyreleased(key)
 		useEditor = useEditor~=true
 	elseif useEditor then
 		editor_keyreleased(lvl, key)
+	else
+		handleKey(key,false)
+	end
+end
+
+function love.keypressed(key)
+	if useEditor==false then
+		handleKey(key,true)
 	end
 end

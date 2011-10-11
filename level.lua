@@ -47,7 +47,7 @@ function Level:update(delta)
 end
 
 function Level:createPhysics()
-	local h,w = 800,600
+	local h,w = 1000,1000
 	print "creating world physics"
 	self.physics = love.physics.newWorld(-w,-h, w, h, 0, 400, true)
 	print "starting parts"
@@ -63,6 +63,14 @@ function Level:createPhysics()
 end
 
 function Level:bomb(x,y,doSuction,maxDistance, maxForce)
+	self:_bomb(x,y,doSuction,maxDistance,maxForce,true)
+end
+
+function Level:force(x,y,doSuction,maxDistance, maxForce)
+	self:_bomb(x,y,doSuction,maxDistance,maxForce,false)
+end
+
+function Level:_bomb(x,y,doSuction,maxDistance, maxForce,doImpulse)
 	--local maxDistance = 9 -- In your head don't forget this number is low because we're multiplying it by 32 pixels
 	--local maxForce = 22
 	--doSuction = true --Very cool looking implosion effect instead of explosion
@@ -94,7 +102,6 @@ function Level:bomb(x,y,doSuction,maxDistance, maxForce)
 			-- Get the angle
 			angle = math.atan2(b2TouchPosition.y - b2BodyPosition.y, b2TouchPosition.x - b2BodyPosition.x)
 			-- Apply an impulse to the body, using the angle
-			o:ApplyImpulse(vec:new(math.cos(angle) * force, math.sin(angle) * force), o.x,o.y)
 		else
 			distance = vec:Distance(b2BodyPosition, b2TouchPosition)
 			if distance > maxDistance then
@@ -106,7 +113,11 @@ function Level:bomb(x,y,doSuction,maxDistance, maxForce)
 			force = strength * maxForce
 			angle = math.atan2(b2BodyPosition.y - b2TouchPosition.y, b2BodyPosition.x - b2TouchPosition.x)
 			-- Apply an impulse to the body, using the angle
-			o:ApplyImpulse(vec:new(math.cos(angle) * force, math.sin(angle) * force), o.x, o.y)
+		end
+		if doImpulse then
+			o:applyImpulse(vec:new(math.cos(angle) * force, math.sin(angle) * force), o.x, o.y)
+		else
+			o:applyForce(vec:new(math.cos(angle) * force, math.sin(angle) * force), o.x, o.y)
 		end
 	end
 end

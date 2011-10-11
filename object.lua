@@ -35,6 +35,9 @@ function Object:createPhysics(world)
 	self.body:setMassFromShapes()
 end
 
-function Object:ApplyImpulse(p,x,y)
+function Object:applyImpulse(p,x,y)
 	self.body:applyImpulse(p.x,p.y,x,y)
+end
+function Object:applyForce(p,x,y)
+	self.body:applyForce(p.x,p.y,x,y)
 end
